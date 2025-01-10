@@ -10,7 +10,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -123,7 +125,6 @@ fun MainContent(modifier: Modifier = Modifier) {
         Image(
 
             bitmap = bitmap.asImageBitmap(),
-//            painter = painterResource(id = R.drawable.eurotext),  // Ensure this drawable exists
             contentDescription = "Text Image",
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
@@ -143,6 +144,8 @@ fun MainContent(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp)
+
+
         ) {
             Text("Convert to Text")
         }
@@ -159,14 +162,20 @@ fun MainContent(modifier: Modifier = Modifier) {
                     .padding(horizontal = 16.dp)
             )
         }
-        Text(
-            text,
-            fontSize = 16.sp,
-            color = Color.DarkGray,
+        Spacer(modifier = Modifier.height(24.dp))
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(500.dp)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
-        )
+        ) {
+            Text(
+                text = text,
+                fontSize = 16.sp,
+                color = Color.DarkGray
+            )
+        }
 
 
     }
@@ -176,7 +185,7 @@ fun loadBitmapFromAssets(context: Context, fileName: String): Bitmap {
     val assetManager = context.assets
     val inputStream = assetManager.open(fileName)
     return BitmapFactory.decodeStream(inputStream).also {
-        inputStream.close() // Ensure to close the stream
+        inputStream.close()
     }
 }
 
