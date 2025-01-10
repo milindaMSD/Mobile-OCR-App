@@ -8,32 +8,30 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.ocrzebra.ui.theme.OCRzebraTheme
 import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+
+
+var imageUrl = "image.jpg"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,13 +40,7 @@ class MainActivity : ComponentActivity() {
         copyTessDataFiles()
         setContent {
             OCRzebraTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        activity = this,
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MyApp()
             }
         }
     }
@@ -81,60 +73,111 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting(activity: ComponentActivity, name: String, modifier: Modifier = Modifier) {
-    var text by remember { mutableStateOf("Zebra OCR Engine ...") }
+fun MyApp() {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = "OCR Engine") },
-                navigationIcon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.zebra_logo),
-                        contentDescription = "Android Logo",
-                        modifier = Modifier.size(128.dp)
-                    )
-                }
-            )
-        },
+        topBar = { AppBar() },
         content = { innerPadding ->
-            Column {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.eurotext),
-                        contentDescription = "Text image",
-                        modifier = Modifier.size(500.dp)
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Button(
-                        onClick = {
-                            val bitmap = BitmapFactory.decodeResource(activity.resources, R.drawable.eurotext)
-                            text = convertToText(activity, bitmap)
-                        },
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text("Convert to Text")
-                    }
-                }
-                Box(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(text)
-                }
-            }
+            MainContent(Modifier.padding(innerPadding))
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppBar() {
+    TopAppBar(
+        title = {
+            Text(
+                text = "OCR Engine",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+            )
+        },
+
+        navigationIcon = {
+            Image(
+                painter = painterResource(id = R.drawable.zebra_logo),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+        }
+    )
+}
+
+@Composable
+fun MainContent(modifier: Modifier = Modifier) {
+    var text by remember { mutableStateOf(" ") }
+    val context = LocalContext.current
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        val bitmap = loadBitmapFromAssets(context, imageUrl)
+        Image(
+
+            bitmap = bitmap.asImageBitmap(),
+//            painter = painterResource(id = R.drawable.eurotext),  // Ensure this drawable exists
+            contentDescription = "Text Image",
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color.LightGray)
+                .fillMaxWidth()
+        )
+
+
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                val bitmap = loadBitmapFromAssets(context, imageUrl)
+                text = convertToText(context, bitmap)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+        ) {
+            Text("Convert to Text")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        Box {
+            Text(
+                text = "Extracted Text",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
+        Text(
+            text,
+            fontSize = 16.sp,
+            color = Color.DarkGray,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+
+
+    }
+}
+
+fun loadBitmapFromAssets(context: Context, fileName: String): Bitmap {
+    val assetManager = context.assets
+    val inputStream = assetManager.open(fileName)
+    return BitmapFactory.decodeStream(inputStream).also {
+        inputStream.close() // Ensure to close the stream
+    }
 }
 
 fun convertToText(context: Context, bitmap: Bitmap): String {
@@ -142,7 +185,6 @@ fun convertToText(context: Context, bitmap: Bitmap): String {
     val dataPath = context.filesDir.toString() + "/"
     val lang = "eng"
 
-    // Check if the tessdata directory exists
     val tessDataDir = File(dataPath + "tessdata/")
     if (!tessDataDir.exists() || !tessDataDir.isDirectory) {
         throw IllegalArgumentException("Data path must contain subfolder tessdata!")
@@ -158,8 +200,8 @@ fun convertToText(context: Context, bitmap: Bitmap): String {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    OCRzebraTheme{
-        Greeting(activity = MainActivity(), name = "Android")
+fun MyAppPreview() {
+    OCRzebraTheme {
+        MyApp()
     }
 }
