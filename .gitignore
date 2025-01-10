@@ -1,0 +1,96 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Built application files
+*.apk
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+/bin/
+/build/
+/gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Gradle files
+.gradle/
+/build/
+/gradle/
+/gradle-cache/
+/gradle/
+/gradlew
+/gradlew.bat
+/gradle-wrapper.properties
+/gradle-wrapper.jar
+/.gradletasknamecache
+
+# Log files
+*.log
+
+# Android Studio files
+.idea/
+/*.iml
+*.iws
+*.ipr
+
+# Keystore files
+*.jks
+*.keystore
+
+# ProGuard
+proguard/
+/proguard-rules.pro
+
+# Kotlin specific
+*.kotlin_module
+
+# IntelliJ IDEA
+*.iml
+*.ipr
+*.iws
+.idea/
+*.idea/**/workspace.xml
+*.idea/**/tasks.xml
+*.idea/**/usage.statistics.xml
+*.idea/**/dictionaries
+*.idea/**/shelf
+*.idea/**/content.url
+*.idea/**/libraries
+*.idea/**/jarRepositories.xml
+*.idea/**/workspace.xml
+
+# Mac OS X
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Android specific
+**/build/
+/out/
+/captures/
+/.externalNativeBuild/
+
