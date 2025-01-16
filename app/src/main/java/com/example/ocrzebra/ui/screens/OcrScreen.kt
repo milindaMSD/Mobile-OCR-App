@@ -4,13 +4,17 @@ package com.example.ocrzebra.ui.screens
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +26,7 @@ import java.io.InputStream
 
 @Composable
 fun OcrScreen(sharedViewModel: SharedViewModel) {
+
     val context = LocalContext.current
     var text by remember { mutableStateOf("") }
 
@@ -41,7 +46,14 @@ fun OcrScreen(sharedViewModel: SharedViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         bitmap?.let {
-            Image(bitmap = it.asImageBitmap(), contentDescription = "Selected Image")
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = "Selected Image" ,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.LightGray)
+                    .fillMaxWidth()
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))

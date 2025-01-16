@@ -6,7 +6,9 @@ import androidx.activity.compose.setContent
 import com.example.ocrzebra.ui.navigation.NavGraph
 import com.example.ocrzebra.ui.theme.OCRzebraTheme
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Column
 import com.example.ocrzebra.ui.SharedViewModel
+import com.example.ocrzebra.ui.components.AppBar
 
 class MainActivity : ComponentActivity() {
     private val sharedViewModel: SharedViewModel by viewModels()
@@ -15,7 +17,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             OCRzebraTheme {
-                NavGraph(sharedViewModel)
+                Column {
+                    AppBar()
+                    NavGraph(sharedViewModel)
+                }
             }
         }
     }
