@@ -17,14 +17,19 @@ fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap {
 }
 
 fun convertToText(context: Context, bitmap: Bitmap): String {
+    println(bitmap)
     val tessBaseAPI = TessBaseAPI()
     val dataPath = context.filesDir.toString() + "/"
     val lang = "eng"
 
+
     val tessDataDir = File(dataPath + "tessdata/")
-    if (!tessDataDir.exists() || !tessDataDir.isDirectory) {
-        throw IllegalArgumentException("Data path must contain subfolder tessdata!")
-    }
+    println(tessDataDir)
+    println(tessDataDir.exists())
+    println(tessDataDir.isDirectory)
+//    if (!tessDataDir.exists() || !tessDataDir.isDirectory) {
+//        throw IllegalArgumentException("Data path must contain subfolder tessdata!")
+//    }
 
     tessBaseAPI.init(dataPath, lang)
     tessBaseAPI.setImage(bitmap)
