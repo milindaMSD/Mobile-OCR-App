@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.sp
 import com.example.ocrzebra.ui.SharedViewModel
 import com.example.ocrzebra.utils.convertToText
 import java.io.InputStream
-
 @Composable
 fun OcrScreen(sharedViewModel: SharedViewModel) {
     val context = LocalContext.current
@@ -46,103 +45,103 @@ fun OcrScreen(sharedViewModel: SharedViewModel) {
         val inputStream: InputStream? = context.contentResolver.openInputStream(it)
         BitmapFactory.decodeStream(inputStream)
     }
+    val scrollState = rememberScrollState()
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp)
     ) {
-        bitmap?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = "Selected Image",
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.LightGray)
-                    .fillMaxWidth()
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = {
-                bitmap?.let {
-                    text = convertToText(context, it)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                Icons.Rounded.Build,
-                contentDescription = "Proceed to OCR"
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Convert to Text")
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (text.isNotEmpty()) {
-            Text(
-                text = "Extracted Text",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            SelectionContainer {
-                BasicText(
-                    text = text,
+            bitmap?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = "Selected Image",
                     modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.LightGray)
                         .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                        .border(2.dp, Color.LightGray, RoundedCornerShape(8.dp))
-                        .padding(16.dp)
-                        .background(Color.Unspecified),
-
-//                    borderColor = Color.Black,
-                    style = MaterialTheme.typography.labelLarge,
-
                 )
-
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    clipboardManager.setText(AnnotatedString(text))
-                    showSnackbar = true
+                    bitmap?.let {
+                        text = convertToText(context, it)
+                    }
                 },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black // Set the button background color
-                ),
-                shape = RoundedCornerShape(10.dp),
-//                modifier = Modifier.background(Color.LightGray)
-
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(
-                    Icons.Rounded.Done,
+                    Icons.Rounded.Build,
                     contentDescription = "Proceed to OCR"
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Copy to Clipboard")
+                Text("Convert to Text")
             }
-        }
 
-        if (showSnackbar) {
-            Snackbar(
-                action = {
-                    TextButton(onClick = { showSnackbar = false }) {
-                        Text("Dismiss")
-                    }
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (text.isNotEmpty()) {
+                Text(
+                    text = "Extracted Text",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                SelectionContainer {
+                    BasicText(
+                        text = text,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(2.dp, Color.LightGray, RoundedCornerShape(8.dp))
+                            .padding(16.dp)
+                            .background(Color.Unspecified),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
                 }
-            ) {
-                Text("Text copied to clipboard")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        clipboardManager.setText(AnnotatedString(text))
+                        showSnackbar = true
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Black // Set the button background color
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Icon(
+                        Icons.Rounded.Done,
+                        contentDescription = "Copy to Clipboard"
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Copy to Clipboard")
+                }
+            }
+
+            if (showSnackbar) {
+                Snackbar(
+                    action = {
+                        TextButton(onClick = { showSnackbar = false }) {
+                            Text("Dismiss")
+                        }
+                    }
+                ) {
+                    Text("Text copied to clipboard")
+                }
             }
         }
     }

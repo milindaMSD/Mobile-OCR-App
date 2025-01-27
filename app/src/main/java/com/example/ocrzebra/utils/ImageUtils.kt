@@ -8,6 +8,7 @@ import com.googlecode.tesseract.android.TessBaseAPI
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 
 fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap {
     val inputStream = context.contentResolver.openInputStream(uri)
@@ -16,25 +17,51 @@ fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap {
     }
 }
 
-fun convertToText(context: Context, bitmap: Bitmap): String {
-    println(bitmap)
+fun convertToText(context: Context, bitmap: Bitmap, ): String {
     val tessBaseAPI = TessBaseAPI()
     val dataPath = context.filesDir.toString() + "/"
-    val lang = "eng"
-
-
+    val lang = "can"
     val tessDataDir = File(dataPath + "tessdata/")
-    println(tessDataDir)
-    println(tessDataDir.exists())
-    println(tessDataDir.isDirectory)
-//    if (!tessDataDir.exists() || !tessDataDir.isDirectory) {
-//        throw IllegalArgumentException("Data path must contain subfolder tessdata!")
-//    }
+    val tessDataFile = File(tessDataDir, "$lang.traineddata")
+    println("[debug - milinda] tessDataFile: $tessDataFile")
+    if (!tessDataFile.exists()) {
+        println("[debug - milinda] tessDataFile does not exist")
+        tessDataDir.mkdirs()
+        copyTessDataFile(context, lang)
+    }
 
     tessBaseAPI.init(dataPath, lang)
     tessBaseAPI.setImage(bitmap)
     val extractedText = tessBaseAPI.utF8Text
     tessBaseAPI.end()
 
+    println("[debug - milinda] extractedText: $extractedText")
+
     return extractedText
+
+}
+
+private fun copyTessDataFile(context: Context, lang: String) {
+    try {
+        val assetManager = context.assets
+        val inputStream: InputStream = assetManager.open("tessdata/$lang.traineddata")
+        val outFile = File(context.filesDir, "tessdata/$lang.traineddata")
+        val outStream = FileOutputStream(outFile)
+
+//        debug
+        println("[debug - milinda] outFile: $outFile")
+
+        val buffer = ByteArray(1024)
+        var read: Int
+        while (inputStream.read(buffer).also { read = it } != -1) {
+            outStream.write(buffer, 0, read)
+        }
+
+        inputStream.close()
+        outStream.flush()
+        outStream.close()
+        println("[debug - milinda] Copied $lang.traineddata")
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
 }

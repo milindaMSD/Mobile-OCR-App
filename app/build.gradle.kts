@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.ocrzebra"
-        minSdk = 34
+        minSdk = 29
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -70,7 +70,6 @@ dependencies {
     implementation("com.github.skydoves:landscapist-glide:1.5.2")
     implementation("com.github.skydoves:landscapist-coil:1.5.2")
     implementation("com.github.skydoves:landscapist-fresco:1.5.2")
-//    implementation ("com.googlecode.tesseract.android:tess-two:9.0.0")
     implementation("com.rmtheis:tess-two:9.1.0")
     implementation ("androidx.navigation:navigation-compose:2.5.3")
     implementation ("com.google.accompanist:accompanist-permissions:0.30.1")
