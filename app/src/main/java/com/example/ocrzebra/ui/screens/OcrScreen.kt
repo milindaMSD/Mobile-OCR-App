@@ -75,7 +75,7 @@ fun OcrScreen(sharedViewModel: SharedViewModel) {
             Button(
                 onClick = {
                     bitmap?.let {
-                        text = convertToText(context, it)
+                        text = convertToText(context, it , listOf("comb"))
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

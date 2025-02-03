@@ -1,3 +1,4 @@
+// ImageUtils.kt
 package com.example.ocrzebra.utils
 
 import android.content.Context
@@ -17,28 +18,28 @@ fun loadBitmapFromUri(context: Context, uri: Uri): Bitmap {
     }
 }
 
-fun convertToText(context: Context, bitmap: Bitmap, ): String {
+fun convertToText(context: Context, bitmap: Bitmap, languages: List<String>): String {
     val tessBaseAPI = TessBaseAPI()
     val dataPath = context.filesDir.toString() + "/"
-    val lang = "can"
+    val lang = languages.joinToString("+")
     val tessDataDir = File(dataPath + "tessdata/")
-    val tessDataFile = File(tessDataDir, "$lang.traineddata")
-    println("[debug - milinda] tessDataFile: $tessDataFile")
-    if (!tessDataFile.exists()) {
-        println("[debug - milinda] tessDataFile does not exist")
-        tessDataDir.mkdirs()
-        copyTessDataFile(context, lang)
+
+    languages.forEach { language ->
+        val tessDataFile = File(tessDataDir, "$language.traineddata")
+        if (!tessDataFile.exists()) {
+            tessDataDir.mkdirs()
+            copyTessDataFile(context, language)
+            println("[debug-msd]" + language)
+        }
     }
 
     tessBaseAPI.init(dataPath, lang)
     tessBaseAPI.setImage(bitmap)
     val extractedText = tessBaseAPI.utF8Text
+    println("[debug-msd]" + extractedText)
     tessBaseAPI.end()
 
-    println("[debug - milinda] extractedText: $extractedText")
-
     return extractedText
-
 }
 
 private fun copyTessDataFile(context: Context, lang: String) {
@@ -47,9 +48,6 @@ private fun copyTessDataFile(context: Context, lang: String) {
         val inputStream: InputStream = assetManager.open("tessdata/$lang.traineddata")
         val outFile = File(context.filesDir, "tessdata/$lang.traineddata")
         val outStream = FileOutputStream(outFile)
-
-//        debug
-        println("[debug - milinda] outFile: $outFile")
 
         val buffer = ByteArray(1024)
         var read: Int
@@ -60,7 +58,6 @@ private fun copyTessDataFile(context: Context, lang: String) {
         inputStream.close()
         outStream.flush()
         outStream.close()
-        println("[debug - milinda] Copied $lang.traineddata")
     } catch (e: IOException) {
         e.printStackTrace()
     }
